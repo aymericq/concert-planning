@@ -1,5 +1,5 @@
 from random import randint
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 
 def can_make_first_part_brute_force(concert_premiere_length: int, track_lengths: List[int]) -> bool:
@@ -47,19 +47,25 @@ def can_make_first_part(concert_premiere_length: int, track_lengths: List[int]) 
 
             # Lookup in O(1)
             if candidate_length_c in dict_of_lengths:
-                dict_for_distinct_lengths = {
-                    length_a: dict_of_lengths[length_a],
-                    length_b: dict_of_lengths[length_b],
-                    candidate_length_c: dict_of_lengths[candidate_length_c]
-                }
-                dict_for_distinct_lengths[length_a] -= 1
-                dict_for_distinct_lengths[length_b] -= 1
-                dict_for_distinct_lengths[candidate_length_c] -= 1
-                if not (dict_for_distinct_lengths[length_a] < 0
-                        or dict_for_distinct_lengths[length_b] < 0
-                        or dict_for_distinct_lengths[candidate_length_c] < 0):
+                song_is_played_twice = is_song_played_twice(dict_of_lengths, length_a, length_b, candidate_length_c)
+                if not song_is_played_twice:
                     return True
     return False
+
+
+def is_song_played_twice(dict_of_lengths: Dict[int, int], length_a: int, length_b: int, length_c: int):
+    dict_for_distinct_lengths = {
+        length_a: dict_of_lengths[length_a],
+        length_b: dict_of_lengths[length_b],
+        length_c: dict_of_lengths[length_c]
+    }
+    dict_for_distinct_lengths[length_a] -= 1
+    dict_for_distinct_lengths[length_b] -= 1
+    dict_for_distinct_lengths[length_c] -= 1
+    song_is_played_twice = (dict_for_distinct_lengths[length_a] < 0
+                            or dict_for_distinct_lengths[length_b] < 0
+                            or dict_for_distinct_lengths[length_c] < 0)
+    return song_is_played_twice
 
 
 def create_tracks_lengths_of_size(n_tracks: int) -> Tuple[int, List[int]]:
@@ -105,9 +111,10 @@ def main():
     assert can_make_first_part_brute_force(concert_premiere_length, track_lengths) == False
     assert can_make_first_part(concert_premiere_length, track_lengths) == False
 
-    n_tracks = 100  # Practical limit: 10000000. It runs in a few dozens of seconds.
+    n_tracks = 10000000  # Practical limit: 10000000. It runs in a few dozens of seconds.
+    print("Generating", n_tracks, "tracks lengths.")
     concert_premiere_length, track_lengths = create_tracks_lengths_of_size(n_tracks)
-    print("Done generating", n_tracks, "tracks. Finding a suitable combination with 'fast' algorithm...")
+    print("Done generating tracks lengths. Finding a suitable combination with 'fast' algorithm...")
     assert can_make_first_part(concert_premiere_length, track_lengths) == True
     print("Done. Finding a suitable combination with 'slow' algorithm...")
     assert can_make_first_part_brute_force(concert_premiere_length, track_lengths) == True
