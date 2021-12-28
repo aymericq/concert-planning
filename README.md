@@ -19,4 +19,6 @@ Answer:
 * For size 4, we can compute the sum of all pairs in L. Then check if each pair
 is in this new hashset. Computing the pairs is O(N^2), there are N(N+1)/2 pairs.
   Looping through is then O(N^2). So this runs in O(N^2).
-* For sizes 5 and up: I can't think of a tractable solution yet !
+* For sizes 5 and up: I think we might be able to achieve O(N^(K-2)) with a
+  similar reasoning.
+  
